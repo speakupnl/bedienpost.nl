@@ -1,0 +1,41 @@
+/* Custom CSS for bedienpost */
+
+/* Logo placement */
+#logo {
+    margin-top: 10px;
+}
+
+/* Adjust these CSS values for every logo image.
+   For a great looking logo on retina displays:
+   - Transparant PNG is recommended.
+   - Use an image twice the size of the display dimensions.
+   - If you want to display your logo at 200x50 pixels, use an image sizes 400x100 pixels.
+   - Adjust the values below to match the display dimensions to half that of the image.
+   So, if your image is 400x100 then adjust width and height to 200x50.
+*/
+#logo img.logo {
+    width: 200px;
+    height: 50px;
+}
+
+/* Logo placement for screens that are narrow */
+@media (min-width: 992px) {
+    #logo img.logo {
+        float: right;
+    }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .modal-lg {
+        width: 1050px;
+    }
+}
+
+.qtip{
+    max-width: 500px !important;
+}
+.qtip-content p {
+    margin: 0 0 6px;
+    line-height: 16px;
+}

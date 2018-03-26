@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+    <head>
+        <title data-bind="i18n: language, key: 'PC Bedienpost', place: 'text'">PC Bedienpost</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+
+
+        <!-- build:css css/style.css -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/sticky-footer-navbar.css" rel="stylesheet">
+        <link href='node_modules/qtip2/dist/jquery.qtip.css' rel="stylesheet" >
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/custom.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <!-- endbuild -->
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="js/lib/html5shiv.js"></script>
+            <script src="js/lib/respond.min.js"></script>
+            <![endif]-->
+
+    </head>
+
+    <body>
+        <div id="wrap">
+            <div class="page-header">
+                <div class="container">
+                    <div class='row'>
+                        <div class='col-md-6 offset-6' id="titel">
+                            <h1 data-bind="i18n: language, key: 'Bedienpost', place: 'text'">Bedienpost</h1>
+                        </div>
+                        <div class='col-md-6' id="logo">
+                            <img class='logo' src="./img/logo.png" alt="">
+                        </div>
+                    </div>
+
+                    <div class='row nopadding'>
+                        <div class='col-md-12' id="controls">
+                            <div class="shortcuts pull-right" data-bind="click: $root.logOut, i18n: language, key: 'Log off', place: 'title'" title="Log off">
+                                <i class="fa fa-arrow-circle-right pull-right"></i>
+                            </div>
+
+                            <span class="loginname" data-bind="text: loggedInName"><i></i></span>
+
+                            <span class="phonelinkstatus pull-right" data-bind="attr: { class: ($root.phoneAuthAvailable() ? 'phonelinkstatus pull-right active' : 'hidden') }"> 
+                                <i class="fa fa-phone-square pull-right"></i>
+                                <span class="icon-label" data-bind="i18n: language, key: connectedPhone() ? 'connected' : 'not connected', place: 'text'"></span>
+                            </span>
+
+                            <div class="shortcuts pull-right" data-bind="click: $root.showShortcuts">
+                                <i class="fa fa-question pull-right"></i>
+                                <span class="icon-label" data-bind="i18n: language, key: 'h<u>e</u>lp', place: 'text'">h<u>e</u>lp</span>
+                            </div>
+                            <div class="shortcuts pull-right" data-bind="click: $root.settingsClicked, visible:$root.amAdmin">
+                                <i class="fa fa-cog pull-right"></i>
+                                <span class="icon-label" data-bind="i18n: language, key: 'settings ', place: 'text'">settings </span>
+                            </div>
+                            <div class="shortcuts pull-right" data-bind="click: $root.downloadLogsClicked, visible:$root.logDownloadEnabled">
+                                <i class="fa fa-download pull-right"></i>
+                                <span class="icon-label" data-bind="i18n: language, key: 'logs', place: 'text'">logs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" data-bind="drop: markUserFavorite">
+
+                <div class='row nopadding'>
+                    <div class='col-md-12' id="alerts">
+                        <div class="alert alert-warning alert-dismissable" role="alert" id="queue-lowwatermark-alert-1" data-bind="visible: showAlert">
+                            <button type="button" class="close" data-bind="click: function () {showAlert(false);}" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="pull-right">
+                                <button class="btn btn-default" type="button" data-bind="click: function () {if (emptyQueue()) { loginQueueFollowingGlobalPause(emptyQueue());}}, i18n: language, key: 'Log in on this queue', place: 'text'">Log in on this queue</button>
+                                <button class="btn btn-default" type="button" data-bind="click: function () {showAlert(false);}, i18n: language, key: 'Close', place: 'text'">Close</button>
+                            </div>
+                            <h4 data-bind="i18n: language, key: 'No logged on agents in this queue', place: 'text'">No logged on agents in this queue</h4>
+                            <p data-bind="i18n: language, key: 'The queue {{emptyQueueName}} has no agents', place: 'text', obj: { 'emptyQueueName' : ($root.emptyQueue()) ? $root.emptyQueue().name : '' }">The queue {{emptyQueueName}} has no agents</p>
+                        </div>
+                        <div class="alert alert-warning alert-dismissable" role="alert" id="queue-stillLoggedOn-alert-1" data-bind="visible: showPauseAlert">
+                            <button type="button" class="close" data-bind="click: function () {showPauseAlert(false);}" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="pull-right">
+                                <button class="btn btn-default" type="button" data-bind="click: function () { conn.unpauseAllQueues(); showPauseAlert(false); }, i18n: language, key: 'End pause', place: 'text'">End pause</button>
+                                <button class="btn btn-default" type="button" data-bind="click: function () { showPauseAlert(false); }, i18n: language, key: 'Close', place: 'text'">Close</button>
+                            </div>
+                            <h4 data-bind="i18n: language, key: 'The user is in pause', place: 'text'">The user is in pause</h4>
+                            <p data-bind="i18n: language, key: 'The user was already on pause, possibly caused by a page-reload', place: 'text'">The user was already on pause, possibly caused by a page-reload</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='row nopadding'>
+
+                    <div class='col-md-6 offset-6' id="activecalls">
+                        <div class="header">
+                            <div class="options">
+                                <div class="shortcuts pull-right" data-bind="click: $root.togglePauseGlobally">
+                                    <i data-bind="attr: { class: ($root.pausedGlobally() ? 'fa fa-calls-header fa-clock-o pause-active' : 'fa fa-calls-header fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') , i18n: language, key: $root.allowPause() ? 'Pause' : '', place: 'title'}" title=""></i>
+                                </div>
+                                <!-- <div data-bind="attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }">
+                                        <i class="fa fa-share"></i>
+                                    </div> -->
+                                <div title="End call" data-bind="click: $root.doHangup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }, i18n: language, key: 'End call', place: 'title'">
+                                    <i class="fa fa-calls-header fa-times-circle-o"></i>
+                                </div>
+                                <div title="Answer call" data-bind="click: $root.doPickup, attr: { class: ($root.connectedPhone() ? 'shortcuts pull-right' : 'hidden') }, i18n: language, key: 'Answer call', place: 'title'">
+                                    <i class="fa fa-calls-header fa-check-circle-o"></i>
+                                </div>
+                            </div>
+                            <h4 data-bind="i18n: language, key: 'Active calls', place: 'text'">Active calls</h4>
+                        </div>
+
+                        <div class="list-group queuelist">
+                            <ul data-bind="foreach: { data:  incomingCallQueue, as: 'entry' },
+                                            css: { 'queue_1':true }">
+                                <li class="noborder">
+                                    <span class="badge pull-right progress-bar-badge-light">
+                                        <span data-bind="text: entry.timeConnected, attr: { id: entry.htmlid }" class="badge progress-bar-badge-dark"></span>
+                                    </span>
+
+                                    <div class="options">
+                                        <i class="fa fa-link" data-bind="click: crmClicked"></i>
+                                    </div>
+                                    <div class="options">
+                                        <i class="fa fa-envelope-o" data-bind="click: $root.mailTo"></i>
+                                    </div>
+                                    <label class="marginleft">
+                                        <h5 class="list-group-item-heading">
+                                            <span data-bind="text: entry.toDisplay"></span>
+                                            <!-- <span data-bind="text: entry.isAutoPause() ? '' :  entry.directionIsOut() ? ' [uitgaand]' : ' [inkomend]' "></span> -->
+                                        </h5>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class='col-md-6'>
+                        <div class="header">
+                            <h4 data-bind="i18n: language, key:'Queues', place: 'text'">Queues</h4>
+                        </div>
+                        <div class="list-group queuelist">
+                            <ul data-bind="foreach: { data: filterWaitingQueue, as: 'entry' },
+                                                css: { 'queue_2':true }">
+                                <li class="list-group-item" data-bind="attr: { class: $root.signInOutColor(entry)}, i18n: language, key: entry.membersStrTranslation(), place: 'title', keytype: 'array', obj: entry.membersStrValues()">
+                                    <span class="badge time pull-right" data-bind="text: entry.maxWaitingTime">"></span>
+                                    <span class="badge pull-right" data-bind="text: entry.waitingAmount"></span>
+                                    <div class="options">
+                                        <i data-bind="click: $root.signInOut, attr: { class: $root.signInOutCssClass(entry.signInOut()) }"></i>
+                                        <i data-bind="click: $root.markQueueFavorite, attr: { class: $root.favoriteCssClass(entry.favorite()) }"></i>
+                                        <i data-bind="click: entry.togglePause, attr: { class: (entry.paused() ? 'fa fa-clock-o pause-active' : 'fa fa-clock-o') + ' ' + ($root.allowPause() ? '' : 'logged-out-color') }"></i>
+                                    </div>
+                                    <label>
+                                        <h5 class="list-group-item-heading" data-bind="text: entry.name"></h5>
+                                    </label>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class='row nopadding'>
+                    <div class='col-md-12'>
+                        <input id="inputField" type="text" data-bind="value: search, valueUpdate: 'afterkeydown', i18n: language, key: 'Search!', place: 'placeholder'" class="form-control" placeholder="Search!">
+                    </div>
+                </div>
+                <div class='row nopadding'>
+                    <div class='col-md-6 offset-6'>
+
+                        <div class="header">
+                            <div class="options" data-bind="click: $root.showKeypad">
+                                <div class="keypad">
+                                    <i class="fa fa-th pull-right"></i>
+                                    <span data-bind="i18n: language, key: '<u>d</u>ialpad', place: 'text'"><u>d</u>ialpad</span>
+                                </div>
+                            </div>
+                            <h4 data-bind="i18n: language, key: 'Favorites', place: 'text'">Favorites</h4>
+                        </div>
+                        <div class="list-group list">
+                            <ul data-bind=" foreach: { data:  favFilteredItems, as: 'entry' },
+                                                            css: { 'curl':true }, drop: markUserFavorite">
+                                <li class="list-group-item" data-bind="drag: {fav: entry}">
+                                    <div class="options">
+                                        <span class="badge pull-right" data-bind="click: $root.clickItem,  text: ($root.search() == '') ? ($root.favFilteredItems().indexOf(entry) < 10 ? $root.favFilteredItems().indexOf(entry) : '' ) : '' "></span>
+                                    </div>
+                                    <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
+                                        <div class="status">
+                                            <i data-bind="click: $root.clickItem, attr: { class: $root.userCssClass(entry)  }"></i>
+                                        </div>
+                                        <div class="fixed-height">
+                                            <div class="first-label" data-bind="click: $root.clickItem, text: entry.name"></div>
+                                            <div class="second-label">
+                                                <span data-bind="click: $root.clickItem, text: entry.ext"></span> <i data-bind="click: $root.clickedSecondRow" class="fa fa-pencil-square-o"></i> <span data-bind="click: $root.clickedSecondRow, text: entry.note"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
+                                        <div class="connection">
+                                            <i data-bind="attr: { class: (entry.directionIsOut() ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left')  }"></i>
+                                        </div>
+                                        <div class="fixed-height">
+                                            <div class="first-label" data-bind="text: entry.connectedName()"> </div>
+                                            <div class="second-label" data-bind="text: entry.numberAndDuration()"> </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div class='col-md-6' data-bind="drop: unmarkUserFavorite">
+                        <div class="header">
+
+                            <h4 data-bind="i18n: language, key: 'Contacts', place: 'text'">Contacts</h4>
+                        </div>
+                        <div class="list-group list">
+
+                            <ul data-bind="foreach: { data:  filteredItems, as: 'entry' }">
+                                <li class="list-group-item" data-bind="drag: {user: entry}">
+                                    <div class="options">
+                                        <span class="badge pull-right" data-bind="click: $root.clickItem , text: ($root.search() != '') ? ($root.filteredItems().indexOf(entry) < 10 ? $root.filteredItems().indexOf(entry) : '' ) : '' "></span>
+                                    </div>
+                                    <div data-bind="attr: { class: $root.firstRowCssClass(entry.connectedName())  }">
+                                        <div class="status">
+                                            <i data-bind="click: $root.clickItem, attr: { class: $root.userCssClass(entry)}"></i>
+                                        </div>
+                                        <div class="fixed-height">
+                                            <div class="first-label" data-bind="click: $root.clickItem , text: entry.name"></div>
+                                            <div class="second-label">
+                                                <span data-bind="click: $root.clickItem, text: entry.ext"></span> <span data-bind="click: $root.clickedSecondRow"><i class="fa fa-pencil-square-o"></i></span> <span data-bind="click: $root.clickedSecondRow, text: entry.note"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div data-bind="attr: { class: $root.secondRowCssClass(entry.connectedName())  }">
+                                        <div class="connection">
+                                            <i data-bind="click: $root.clickItem, attr: { class: (entry.directionIsOut() ? 'fa fa-arrow-circle-right' : 'fa fa-arrow-circle-left')  }"></i>
+                                        </div>
+                                        <div class="fixed-height">
+                                            <div class="first-label" data-bind="text: entry.connectedName()"> </div>
+                                            <div class="second-label" data-bind="text: entry.numberAndDuration()"> </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="selectNumberModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header selectnumber">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSelectNumberModal">&times;</button>
+                        <h5 data-bind="i18n: language, key: 'Which number for', place: 'text'">Which number for</h5>
+                        <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName()"></span>?</h4>
+                        <h5 data-bind="text: clickedListItem() ? clickedListItem().company : ''"></h5>
+                    </div>
+                    <div class="modal-body call">
+
+                        <div data-bind="foreach: { data:  $root.clickedListItemPhoneNumbers, as: 'item' }">
+                            <button class="btn btn-primary btn-call" aria-hidden="true" type="button" data-bind="text: $root.clickedListItemPhoneNumbers().indexOf(item) + ': ' + item.name + ': ' + item.number, click: $root.actionSelectedContactNumber"></button>
+                        </div>
+                        <!--<center><button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionCalling, valueUpdate: 'afterkeydown'"><u>B</u>el</button></center> -->
+
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="transferModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissTransferModal">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            <span data-bind="i18n: language, key: 'How do you want to tranfer to {{clickedListItemName}}?', place: 'text', obj: { 'clickedListItemName' : $root.clickedListItemName() }">How do you want to tranfer to {{clickedListItemName}}?</span>
+                        </h4>
+                    </div>
+                    <div class="modal-body call">
+                        <div class="span3">
+                            <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransfer">
+                                <span data-bind="i18n: language, key: 'Transfer', place: 'text'">Transfer</span> (<u>T</u>)
+                            </button>
+                            <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.actionTransferAttended, enable: ($root.callingState() == 'calling')">
+                                <span data-bind="i18n: language, key: 'Att. Transfer', place: 'text'">Att. Transfer</span> (<u>A</u>)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="transferEndModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.cancelTransfer">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">
+                            <span data-bind="i18n: language, key: 'Transfer to {{clickedListItemName}} in progress...', place: 'text', obj: { 'clickedListItemName' : $root.clickedListItemName() }">Transfer to {{clickedListItemName}} in progress...</span>
+                        </h4>
+                    </div>
+                    <div class="modal-body call">
+                        <div class="span2">
+                            <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.cancelTransfer, i18n: language, key: 'Cancel transfer', place: 'text'">Cancel transfer</button>
+                            <button class="btn btn-primary connect" aria-hidden="true" type="button" data-bind="click: $root.finalizeTransfer, i18n: language, key: 'Confirm', place: 'text'">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="callModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissCallModal">&times;</button>
+                        <center>
+                            <h4 class="modal-title" id="myModalLabel"><span data-bind="text: $root.clickedListItemName()"></span></h4>
+                        </center>
+                    </div>
+                    <div class="modal-body call">
+                        <div class="text-center">
+                            <center>
+                                <button class="btn btn-primary connect" aria-hidden="true" type="button" 
+                                    data-bind="click: $root.actionCalling, valueUpdate: 'afterkeydown', i18n: language, key: 'Call (<u>B</u>)', place: 'text'">Call (<u>B</u>)
+                                </button>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" data-bind="i18n: language, key: 'Login', place: 'text'">Login</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="loginProblemWarningDiv" data-bind="attr: { hidden: !$root.authError()}">
+                            <span class="help-block loginProblemWarning" data-bind="i18n: language, key: 'Login failed, please try again.', place: 'text'">Login failed, please try again.</span>
+                        </div>
+                        <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-error' : 'form-group has-success' }">
+                            <label class="control-label"><span data-bind="i18n: language, key: 'Login', place: 'text'">Login</span>:</label>
+                            <input id="nameInputField" type="text" placeholder="User@Domain.com" data-bind="value: loginName, valueUpdate: 'afterkeydown'" class="form-control">
+                        </div>
+                        <div class="form-group" data-bind="attr: { class: ($root.authError()) ? 'form-group has-error' : 'form-group has-success' }">
+                            <label class="control-label"><span data-bind="i18n: language, key: 'Password', place: 'text'">Password</span>:</label>
+                            <input id="passwordInputField" type="password" data-bind="value: loginPass, valueUpdate: 'afterkeydown'" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <!-- <button class="btn" type="button" data-bind="click: $root.dismissLoginModal">Afbreken</button> -->
+                            <button id="loginSubmitBtn" class="btn btn-primary btn-2 has-spinner" type="button" 
+                                    data-bind="click: $root.doLogin, valueUpdate: 'afterkeydown'">
+                                <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>
+                                <span data-bind="i18n: language, key: 'Log on', place: 'text'">Log on</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+        <!-- /.modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="keypadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-bind="click: $root.dismissKeypadModal">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel" data-bind="i18n: language, key: 'Dialpad', place: 'text'">Dialpad</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input id="keypadInputField" type="text" class="form-control" data-bind="value: $root.numericInput, valueUpdate: 'afterkeydown'">
+                        <p></p>
+                        <div class="buttoncontainer text-center">
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('1')">1</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('2')">2</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('3')">3</button>
+                        </div>
+                        <div class="buttoncontainer text-center">
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('4')">4</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('5')">5</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('6')">6</button>
+                        </div>
+                        <div class="buttoncontainer text-center">
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('7')">7</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('8')">8</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('9')">9</button>
+                        </div>
+                        <div class="buttoncontainer text-center">
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.clearNumber()">Clr</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('0')">0</button>
+                            <button class="btn btn-circle" type="button" data-bind="click: $root.enterNumber('+')">+</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-2" 
+                                        data-bind="click: $root.attendedTransfer, enable: ($root.callingState() == 'calling'), i18n: language, key: 'Att. Transfer', place: 'text'">Att. Transfer</button>
+                                <button type="button" class="btn btn-primary btn-2" 
+                                        data-bind="click: $root.unattendedTransfer, enable: ($root.callingState() != 'onhook'), i18n: language, key: 'Transfer', place: 'text'">Transfer</button>
+                                <button type="button" class="btn btn-primary btn-2" 
+                                        data-bind="click: $root.call, i18n: language, key: 'Call (short)', place: 'text'">Call</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="shortcutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-bg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissShortcutModal">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel" data-bind="i18n: language, key: 'Help', place: 'text'">Help</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="buttoncontainer text-left">
+                            <p>0 .. 9 : <span data-bind="i18n: language, key: 'Call favorite / call Contact', place: 'text'">Call favorite / call Contact</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>S : <span data-bind="i18n: language, key: 'Go to search', place: 'text'">Go to search</span></p>
+                        </div>
+
+                        <div class="buttoncontainer text-left">
+                            <p>E : <span data-bind="i18n: language, key: 'Show Help', place: 'text'">Show Help</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>D : <span data-bind="i18n: language, key: 'Show dialpad', place: 'text'">Show dialpad</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>N : <span data-bind="i18n: language, key: 'Answer call', place: 'text'">Answer call</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>H : <span data-bind="i18n: language, key: 'End call', place: 'text'">End call</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>P : <span data-bind="i18n: language, key: 'Toggle pause', place: 'text'">Toggle pause</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>B : <span data-bind="i18n: language, key: 'Call', place: 'text'"></span> <span data-bind="i18n: language, key: '(after selecting a favorite or contact)', place: 'text'">(after selecting a favorite or contact)</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>A : <span data-bind="i18n: language, key: 'Attended transfer', place: 'text'">Attended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favorite or contact)', place: 'text'">(after selecting a favorite or contact)</span></p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>T : <span data-bind="i18n: language, key: 'Unattended transfer', place: 'text'">Unattended transfer</span> <span data-bind="i18n: language, key: '(after selecting a favorite or contact)', place: 'text'">(after selecting a favorite or contact)</span></p>
+                        </div>
+
+                        <div class="buttoncontainer text-left">
+                            <p>
+                                <i class="fa fa-envelope-o legend"></i>
+                                <span data-bind="i18n: language, key: 'Send email to caller or callee', place: 'text'">Send email to caller or callee</span>
+                            </p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>
+                                <i class="fa fa-arrow-circle-right legend"></i>
+                                <span data-bind="i18n: language, key: 'Log off', place: 'text'">Log off</span>
+                            </p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>
+                                <i class="fa fa-question legend"></i>
+                                <span data-bind="i18n: language, key: 'Help', place: 'text'">Help</span>
+                            </p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>
+                                <i class="fa fa-sign-in legend"></i>
+                                <i class="fa fa-sign-out legend"></i>
+                                <span data-bind="i18n: language, key: 'Enter queue / Leave queue', place: 'text'">Enter queue / Leave queue</span>
+                            </p>
+                        </div>
+                        <div class="buttoncontainer text-left">
+                            <p>
+                                <i class="fa fa-star legend"></i>
+                                <i class="fa fa-star-o legend"></i>
+                                <span data-bind="i18n: language, key: 'Mark as favorite / Unmark as favorite', place: 'text'">Mark as favorite / Unmark as favorite</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissShortcutModal, i18n: language, key: 'Done', place: 'text'">Done</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissSettingsModal">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel" data-bind="i18n: language, key: 'Settings', place: 'text'">Settings</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#nummerafscherming" aria-controls="nummerafscherming" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Hide phone numbers', place: 'text'">Hide phone numbers</a></li>
+                            <li role="presentation"><a href="#queuesettings" aria-controls="queuesettings" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Queue Settings', place: 'text'">Queue Settings</a></li>
+                            <li role="presentation"><a href="#import" aria-controls="import" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Import address book', place: 'text'">Import address book</a></li>
+                            <li role="presentation"><a href="#pauserights" aria-controls="import" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Queue pause', place: 'text'">Queue pause</a></li>
+                            <li role="presentation"><a href="#crm" aria-controls="crm" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'CRM-integration', place: 'text'">CRM-integration</a></li>
+                            <li role="presentation"><a href="#logDownload" aria-controls="crm" role="tab" data-toggle="tab" data-bind="i18n: language, key: 'Download log-files', place: 'text'">Download log-files</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+
+                            <div role="tabpanel" class="tab-pane active" id="nummerafscherming">
+                                <!-- <input name="obfuscateNumber" type="checkbox" checked data-bind="checked: $root.obfuscateNumber"> -->
+                                <p>
+                                    <span data-bind="i18n: language, key: 'Hide phone numbers. This is a company setting:', place: 'text'">Hide phone numbers. This is a company setting:</span>
+                                    <select data-bind="value: selectedProtectNumberOption, foreach: { data: $root.protectNumberOptions, as: 'entry' }">
+                                        <option data-bind="i18n: language, key: entry.val, place: 'valueandtext'"></option>
+                                    </select>
+                                </p>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="queuesettings">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <td data-bind="i18n: language, key: 'Queue name', place: 'text'">Queue name</td>
+                                            <td data-bind="i18n: language, key: 'Automatic Pause (wrap-up)', place: 'text'">Automatic Pause (wrap-up)</td>
+                                            <td data-bind="i18n: language, key: 'Warning when no agents available', place: 'text'">Warning when no agents available</td>
+                                        </tr>
+                                        <tbody data-bind="foreach: { data: filterWaitingQueue, as: 'entry' }">
+                                            <tr>
+                                                <td><span data-bind="text: entry.name"></span></td>
+                                                <td>
+                                                    <span>
+                                                        <span data-bind="i18n: language, key: 'for', place: 'text'">for</span>
+                                                        <input type="number" min="0" max="900" data-bind="value: entry.pauseTime, valueUpdate: 'afterkeydown'">
+                                                        <span data-bind="i18n: language, key: 'seconds.', place: 'text'">seconds.</span>
+                                                    </span>
+                                                </td>
+                                                <td><span><input type="checkbox"  data-bind="checked: entry.warnIfNoAgents"></span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="import">
+                                <p data-bind="i18n: language, key: 'This allows you to import your company-address book in vCard-format (.vcf). All users in your company will be able to view and dial to all contacts.', place: 'text'">This allows you to import your company-address book in vCard-format (.vcf). All users in your company will be able to view and dial to all contacts.</p>
+                                <p>
+                                    <span data-bind="i18n: language, key: 'All users in your company will be able to view and dial to all contacts.', place: 'text'">All users in your company will be able to view and dial to all contacts.</span>
+                                    <span data-bind="i18n: language, key: 'Uploading a new address book will replace the old one.', place: 'text'">Uploading a new address book will replace the old one.</span>
+                                </p>
+                                <p><input type="file" data-bind="fileInput: $root.vcardFileData"></p>		
+                                <p data-bind="text: $root.vcardUploadFeedback"/>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="pauserights">
+                                <p><span data-bind="i18n: language, key: 'Users are allowed to use pause:', place: 'text'">Users are allowed to use pause:</span> <input type="checkbox" data-bind="checked: $root.allowPause"></p>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="crm">
+                                <p data-bind="i18n: language, key: 'Alternative Help page:', place: 'text'">Alternative Help page:</p>
+                                <p>
+                                    <input type="text" data-bind="value: helpUrl, valueUpdate: 'afterkeydown', i18n: language, key: 'https://intranet.example.com/help', place: 'placeholder'" 
+                                            style="width:100%; max-width: 550px" placeholder="https://intranet.example.com/help">
+                                </p>
+                                <hr/>
+
+                                <p>
+                                    <span data-bind="i18n: language, key: 'By activating CRM-integration, each incoming call will show a link to your CRM.', place: 'text'">By activating CRM-integration, each incoming call will show a link to your CRM.</span> 
+                                    <span data-bind="i18n: language, key: 'To activate CRM-integration, please provide your CRM URL here.', place: 'text'">To activate CRM-integration, please provide your CRM URL here.</span>
+                                </p>
+                                <p>
+                                    <span data-bind="i18n: language, key: 'Customer card URL', place: 'text'">Customer card URL</span> <i class="fa fa-info-circle fa-size14 urltip" aria-hidden="true"></i>
+                                </p>
+                                <p>
+                                    <input type="text" data-bind="value: crmUrl, valueUpdate: 'afterkeydown', i18n: language, key: 'https://my-crm.com/example.php?number=$callerid&call=$callid&queue=$queueid', place: 'placeholder'" 
+                                            style="width:100%; max-width: 550px" placeholder="https://my-crm.com/example.php?number=$callerid&call=$callid&queue=$queueid">
+                                </p>
+                                <p>
+                                    <span data-bind="i18n: language, key: 'Open url in:', place: 'text'">Open url in: </span>
+                                    <select data-bind="value: selectedOpenCardUrlOption, foreach: { data: $root.openUrlOptions, as: 'entry' }">
+                                        <option data-bind="i18n: language, key: entry.val, place: 'valueandtext'"></option>
+                                    </select>
+                                </p>
+                                <hr/>
+                                <p>
+                                    <span data-bind="i18n: language, key: 'Call note URL', place: 'text'">Call note URL</span> <i class="fa fa-info-circle fa-size14 urltip" aria-hidden="true"></i>
+                                </p>
+                                <p>
+                                    <input type="text" data-bind="value: callNoteUrl, valueUpdate: 'afterkeydown', i18n: language, key: 'https://my-crm.com/note.php?number=$callerid&call=$callid&queue=$queueid', place: 'placeholder'" 
+                                            style="width:100%; max-width: 550px" placeholder="https://my-crm.com/note.php?number=$callerid&call=$callid&queue=$queueid">
+                                </p>
+                                <p>
+                                    <span data-bind="i18n: language, key: 'Open url in:', place: 'text'">Open url in: </span>
+                                    <select data-bind="value: selectedOpenNoteUrlOption, foreach: { data: $root.openUrlOptions, as: 'entry' }">
+                                        <option data-bind="i18n: language, key: entry.val, place: 'valueandtext'"></option>
+                                    </select>
+                                </p>
+                                <!--<p>
+                                    <input type="text" data-bind="value: afterCallUrl, valueUpdate: 'afterkeydown', i18n: language, key: 'https://my-crm.example.com/after-call.php', place: 'placeholder'" 
+                                            style="width:300px" placeholder="https://my-crm.example.com/after-call.php">
+                                </p>-->
+                                <!--<p data-bind="i18n: language, key: 'Send the following value as \'auth=\' URL-parameter:', place: 'text'">Send the following value as 'auth=' URL-parameter:</p>
+                                <p>
+                                    <input type="text" data-bind="value: customAuthHeader, valueUpdate: 'afterkeydown'" 
+                                            style="width:300px" placeholder="d8e8fca2dc0f896fd7cb4cb0031ba249">
+                                </p>-->
+
+                                <p>
+                                    <span data-bind="i18n: language, key: 'When to show call-note-page: ', place: 'text'">When to show call-note-page: </span>
+                                    <select data-bind="value: selectedShowCallNotePageOption, foreach: { data: $root.showCallNotePageOptions, as: 'entry' }">
+                                        <option data-bind="i18n: language, key: entry.val, place: 'valueandtext'"></option>
+                                    </select>
+                                </p>
+                                <div id="showCallNoteQueueHolder" class="table-responsive"> 
+                                    <table class="table table-hover">
+                                        <tbody data-bind="foreach: { data: filterWaitingQueue, as: 'entry' }">
+                                            <tr>
+                                                <td>
+                                                    <span><input type="checkbox"  data-bind="checked: entry.openUrlAfterCallEnd"></span>
+                                                    <span data-bind="text: entry.name"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane" id="logDownload">
+                                <p>
+                                    <span data-bind="i18n: language, key: 'Allow all users to download company log-files.', place: 'text'">Allow all users to download company log-files.</span>
+                                    <input name="logDownload" type="checkbox" checked data-bind="checked: $root.logDownloadEnabled">
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissSettingsModal, i18n: language, key: 'Done', place: 'text'">Done</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="modal fade" id="userNoteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-bg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" data-bind="click: $root.dismissUserNoteModal">&times;</button>
+                        <h4 class="modal-title">
+                            <span data-bind="i18n: language, key: 'Status for:', place: 'text'">Status for:</span>
+                            <span data-bind="text: ($root.clickedListItem() ? $root.clickedListItem().name() : '')"></span>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+
+                    <p>
+                        <input data-bind="value: ($root.clickedListItem() ? $root.clickedListItem().note : ''), valueUpdate: 'afterkeydown', event: {blur: noteUpdated}, i18n: language, key: 'Status for user', place: 'placeholder'"
+                            type="text" style="width:500px" placeholder="Status for user">
+                    </p>
+
+                        <div class="modal-footer">
+                            <div class="text-center">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary btn-2" type="button" data-bind="click: $root.dismissUserNoteModal, i18n: language, key: 'Done', place: 'text'">Done</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <input id="hiddennumberfromext" type="text" class="hidden">
+
+        <div class="pingfailed-overlay"  data-bind="attr: { style: ($root.connectionStatus() ? 'display:none' : '') }">
+            <div class="pingfailed-connection-status"  title="connection status" data-bind="i18n: language, key: 'connection status', place: 'title'">
+                <i class="disconnected fa fa-spinner fa-spin fa-5x"></i>
+                <div class="connectingText"><span data-bind="i18n: language, key: 'Connecting', place: 'text'">Connecting</span>...</div>
+            </div>
+        </div>
+    </body>
+
+    <!-- build:js js/libs.js -->
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery-ui.min.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
+
+    <script type='text/javascript' src='js/lib/jquery.ui.touch-punch.min.js'></script>
+    <script type='text/javascript' src='js/lib/knockout-3.3.0.js'></script>
+    <script type='text/javascript' src='js/lib/knockout.mapping.js'></script>
+
+      <script type='text/javascript' src='node_modules/moment/min/moment.min.js'></script>
+      <script type='text/javascript' src='node_modules/underscore/underscore-min.js'></script>
+      <script type='text/javascript' src='node_modules/backbone/backbone.js'></script>
+      <script type='text/javascript' src='node_modules/strophe/strophe.js'></script>
+      <script type='text/javascript' src='node_modules/qtip2/dist/jquery.qtip.min.js'></script>
+      <script type='text/javascript' src='js/lib/eModal.js'></script>
+      <script type='text/javascript' src='node_modules/i18next/i18next.js'></script>
+      <script type='text/javascript' src='node_modules/i18next-xhr-backend/i18nextXHRBackend.js'></script>
+      <script type='text/javascript' src='js/lib/strophe.pubsub.js'></script>
+      <script type='text/javascript' src='js/lib/knockout-file-bindings.js'></script>
+      <script type='text/javascript' src='js/lib/eModal.js'></script>
+  <!-- endbuild -->
+
+    <!-- build:js js/app.js -->
+    <script type='text/javascript' src="node_modules/lisa-api/LisaApi.js"></script>
+    <script type='text/javascript' src="js/lib/queuePause.js"></script>
+
+    <script type='text/javascript' src='js/translate.js'></script>
+    <script type='text/javascript' src='js/dataModel.js'></script>
+    <script type='text/javascript' src='js/ViewController.js'></script>
+    <script type='text/javascript' src="js/RemoteStorage-new.js"></script>
+    <script type='text/javascript' src="js/ModelController.js"></script>
+
+    <script type='text/javascript' src="js/DnsResolvJs/DnsResolv.js"></script>
+    <script type='text/javascript' src="js/DnsResolvJs/StatDnsDnsResolv.js"></script>
+    <script type='text/javascript' src="js/DnsResolvJs/JsonDnsDnsResolv.js"></script>
+    <script type='text/javascript' src="js/resolveServer.js"></script>
+    <!-- endbuild -->
+
+</html>

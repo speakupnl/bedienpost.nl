@@ -1,0 +1,825 @@
+
+@import url("http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css");
+
+@media (min-width: 480px) {
+    .list ul
+    {
+       max-height: 900px;
+    }
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .list ul
+    {
+       max-height: 900px;
+    }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .modal-lg {
+        width: 1000px;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+}
+
+@font-face {
+    font-family: 'Glyphicons Halflings';
+    src: url('../fonts/glyphicons-halflings-regular.eot');
+    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'),     url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}
+
+body {
+    font-family: Helvetica, Arial;
+    background-color:#ffffff;
+    margin:0px
+}
+
+#wrap > .container {
+    padding: 0px 15px 0;
+}
+
+.row:before, .row:after
+{
+    display:none;
+    content:"";
+}
+
+.modal-body {
+    overflow-y: auto;
+    padding:20px 20px 0 20px;
+}
+
+.call {
+    padding:20px 20px 20px 20px;
+}
+
+.modal-footer {
+    margin-top: 20px;
+    padding: 19px 0 20px;
+}
+
+.form-control {
+    color:#801c78;
+    background-color: #DEDEDE;
+    border: 1px solid #999999;
+}
+
+.fixed-height
+{
+    height:45px;
+}
+
+.overflow
+{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.nav-tabs
+{
+    margin-bottom: 15px;
+}
+
+.list ul
+{
+    max-height: 460px;
+    margin:10px 0 0 0;
+    padding: 0;
+    overflow-y: scroll;
+    list-style: none;
+
+    -webkit-perspective: 400px;
+       -moz-perspective: 400px;
+        -ms-perspective: 400px;
+         -o-perspective: 400px;
+            perspective: 400px;
+}
+
+.list li
+{
+    border: 1px solid #ffffff;
+    padding: 0px;
+}
+
+.list li .options
+{
+    float:right;
+}
+
+.list li .options .badge
+{
+    width: 30px;
+    margin-left:7px;
+    margin-right:10px;
+}
+
+.list li .status
+{
+    display:inline;
+    float:left;
+    padding:10px;
+    background-color:#032739;
+    height:45px;
+}
+
+.list li .connection
+{
+    display:inline;
+    float:left;
+    padding:10px;
+    padding-bottom: 12px;
+    height:45px;
+}
+
+.list li .first-info-small
+{
+    display:inline-block;
+    width:43%;
+}
+
+.list li .first-info-big
+{
+    display:inline-block;
+    width:85%;
+}
+
+.list li .invisible
+{
+    display:none;
+    visibility: hidden;
+}
+
+.list li .second-info
+{
+    display:inline-block;
+    width:43%;
+}
+
+.list li .first-label
+{
+    margin-top: 1px;
+    padding-left:5px;
+    font-size:17px;
+    font-weight: 600;
+    display:block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+}
+
+.list li .second-label
+{
+    margin-top:-3px;
+    padding-left:7px;
+    font-size:13px;
+    font-weight: 400;
+    display:block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+}
+
+.icon-label
+{
+    margin-top: 0px;
+    padding-right: 3px;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.row
+{
+    margin-top: 0px;
+}
+
+.list-group-item
+{
+    margin-bottom: -7px;
+}
+
+.queuelist
+{
+    margin-top:20px;
+    margin-bottom:30px;
+}
+
+.queuelist ul
+{
+    z-index: 1;
+    position:relative;
+    overflow:hidden;
+    height: 125px;
+    padding: 0;
+    padding-top:5px;
+    overflow-y: scroll;
+    list-style: none;
+    /*box-shadow:inset 1px 2px 6px #070707;*/
+
+    -webkit-perspective: 400px;
+       -moz-perspective: 400px;
+        -ms-perspective: 400px;
+         -o-perspective: 400px;
+            perspective: 400px;
+}
+
+.queue_1 li
+{
+    height: 30px;
+    border: 1px solid #ffffff;
+}
+
+.queue_1 li .options
+{
+    float: right;
+}
+
+.queue_1 li .badge
+{
+    width: 60px;
+    margin-left: 7px;
+    margin-right: 10px;
+}
+
+.queue_2 li
+{
+    height: 30px;
+    border: 1px solid #ffffff;
+}
+
+.queue_2 li .options
+{
+    float: right;
+}
+
+.queue_2 li .badge
+{
+    width: 30px;
+    margin-left: 7px;
+    margin-right: 10px;
+}
+
+.badge.time {
+    width: 70px !important;
+    margin-right: 5px !important;
+}
+
+.overlay {
+    position:absolute;
+    background:#FFFFFF;
+    border-radius:6px;
+    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    margin-right:11px;
+    margin-top:2px;
+    padding:1%;
+    display:inline;
+    color:#fff !important;
+    z-index:2;
+}
+
+.noborder {
+    border: 0 none !important;
+}
+
+.marginleft {
+    margin-left: 5px;
+}
+
+.progress-bar-badge-light {
+    background: #afafaf;
+    padding: 0;
+}
+
+.queue_1 li .badge .progress-bar-badge-dark {
+    width: 100%;
+    background-color: #999;
+    margin-left: 0;
+    float: left;
+}
+
+.selectnumber button + h5 {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.btn-call
+{
+    display: block;
+    margin-bottom: 5px;
+    width: 100%;
+    text-align: left;
+}
+
+.btn-pickup
+{
+    background-color: #428bca;
+    border-color: #878787 #878787 hsl(86, 37%, 39.5%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
+    -webkit-font-smoothing: antialiased;
+}
+
+.btn-inactive
+{
+    border-color: #878787 #878787 hsl(225, 0%, 49.5%);
+    color: #000 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.23);
+    -webkit-font-smoothing: antialiased;
+
+}
+
+.btn-hangup
+{
+    background-color: #428bca;
+    border-color: #878787 #878787 hsl(225, 0%, 49.5%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
+    -webkit-font-smoothing: antialiased;
+
+}
+
+.btn-transfer
+{
+    background-color: #428bca;
+    border-color: #878787 #878787 hsl(225, 0%, 49.5%);
+    color: #333 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.09);
+    -webkit-font-smoothing: antialiased;
+}
+
+.btn-circle
+{
+    width:50px;
+    height:50px;
+    border-radius: 25px;
+    margin: 5px;
+    background-color: #428bca;
+    border-color: #878787 #878787 hsl(86, 37%, 39.5%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.09);
+    -webkit-font-smoothing: antialiased;
+}
+
+.contact-available
+{
+    color: green;
+}
+
+.contact-ringing
+{
+    color: orange;
+}
+
+.contact-on-phone
+{
+    color: red;
+}
+
+.contact-imported
+{
+    color: white;
+}
+
+.contact-logged-out
+{
+    color: white;
+}
+
+.loginname,
+.phonelinkstatus {
+    padding: 4px 10px;
+    margin-right: 5px;
+    float: right;
+    
+    font-size: 13px;
+    text-align: right;
+    
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+.header .options .pause-active {
+    color: white;
+    background-color: #ff4343;
+    border-radius: 10px;
+}
+
+.fa
+{
+    font-size: 20px;
+    margin-top: 0px;
+    display: inline-block;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+.fa-calls-header {
+    padding-top: 2px;
+    padding-right: 10px;
+}
+
+.fa-pencil-square-o
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+}
+
+.fa-pause,
+.fa-play {
+    cursor: pointer;
+    
+    font-size: 15px;
+    vertical-align: top;
+    margin-top: 1px;
+}
+
+.fa-clock-o.pause-active {
+    color: red;
+}
+
+.fa-phone-square {
+    font-size: 18px;
+}
+
+.fa-size14{
+    font-size: 14px;
+}
+
+.table-responsive {
+    max-height: 350px;
+    overflow-y: scroll;
+}
+
+.table tr:last-child td {
+    border-bottom: 1px solid #ddd;
+}
+
+#autopause table td:first-child {
+    vertical-align: middle;
+}
+
+li.list-group-item i.fa-pencil-square-o
+{
+    opacity: 0.1;
+    -webkit-transition: opacity .1s ease-in-out;
+       -moz-transition: opacity .1s ease-in-out;
+            transition: opacity .1s ease-in-out;
+
+    vertical-align: -2px;
+    margin-left: 3px;
+}
+
+li.list-group-item:hover i.fa-pencil-square-o
+{
+    opacity: 1;
+}
+
+.fa-envelope-o
+{
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: -1px;
+}
+
+.fa-link
+{
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+    margin-left: 6px;
+}
+
+.fa-star
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+
+}
+
+.fa-star-o
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+}
+
+.fa-sign-in
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    cursor:pointer;
+    font-size: 18px;
+    margin-top:0px;
+}
+
+.fa-sign-out
+{
+    margin-left: 0px;
+    margin-right: 0px;
+    cursor:pointer;
+    font-size: 18px;
+    margin-top: 0px;
+}
+
+.fa-question
+{
+    margin-left: 0px;
+    margin-right: 0px;
+    cursor:pointer;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.fa-arrow-circle-left
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 20px;
+    margin-top: 0px;
+}
+
+.fa-arrow-circle-right
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 20px;
+    margin-top: 0px;
+}
+
+.fa.pull-right
+{
+    margin-left: .0em;
+}
+
+.fa-refresh
+{
+    font-size: 14px;
+}
+
+.fa-phone
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 20px;
+    margin-top:0px;
+}
+
+.fa-male
+{
+    padding: 0 3px;
+}
+
+.fa-th
+{
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 16px;
+    margin-top:4px;
+}
+
+.legend
+{
+    margin-left: 0px;
+    margin-right: 10px;
+}
+
+
+.logged-in-color,
+.enabled-color {
+    color:#2d2f31;
+}
+
+.logged-out-color,
+.disabled-color {
+    color:#afafaf;
+}
+
+.noboby-logged-in-warn
+{
+    -webkit-animation-name: pulsate;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-iteration-count: infinite;
+
+    -moz-animation-name: pulsate;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: ease-in-out;
+    -moz-animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes pulsate {
+    0% { opacity: 1.0}
+    10% { opacity: .80}
+    20% { opacity: .60 }
+    30% { opacity: .40 }
+    40% { opacity: .20 }
+    50% { opacity: 0.0}
+    60% { opacity: .20}
+    70% { opacity: .40}
+    80% { opacity: .60}
+    90% { opacity: .80}
+    100% { opacity: 1.0}
+}
+
+@-moz-keyframes pulsate{
+    0% { opacity: 1.0}
+    10% { opacity: .80}
+    20% { opacity: .60 }
+    30% { opacity: .40 }
+    40% { opacity: .20 }
+    50% { opacity: 0.0}
+    60% { opacity: .20}
+    70% { opacity: .40}
+    80% { opacity: .60}
+    90% { opacity: .80}
+    100% { opacity: 1.0}
+}
+
+.header
+{
+    border-bottom: 1px solid #999999;
+    padding: 0px;
+}
+
+.header .options
+{
+    float: right;
+}
+
+#controls .shortcuts,
+.header .options .globalpause,
+.header .options .keypad {
+    cursor: pointer;
+}
+
+#controls .shortcuts
+{
+    margin-top: 2px;
+    padding-right: 20px;
+    display: inline;
+}
+
+#controls .shortcuts:first-child {
+    padding-right: 0;
+    margin-right: -3px;
+    padding-left: 10px;
+}
+
+.header .options .globalpause .fa {
+    margin-top: 3px;
+    
+    padding-right: 149px;
+}
+
+.header .options .fa {
+    padding-left: 10px;
+    
+    cursor: pointer;
+    
+    font-size: 22px;
+}
+
+.header .options div:first-child > .fa {
+    padding-right: 10px;
+}
+
+.header .options .fa-share {
+    font-size: 18px;
+}
+
+.queuelist .fa-play,
+.queuelist .fa-pause {
+    padding-right: 4px;
+}
+
+.header .options .keypad
+{
+    padding-left: 10px;
+    display:inline;
+}
+
+.connect
+{
+    width:49%;
+}
+
+.badge {
+    font-size: 12.025px;
+    font-weight: bold;
+    white-space: nowrap;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+}
+
+.spinner {
+  display: inline-block;
+  opacity: 0;
+  width: 0;
+}
+
+.has-spinner.active {
+  cursor:progress;
+}
+
+.has-spinner.active .spinner {
+  opacity: 1;
+  width: auto; /* This doesn't work, just fix for unkown width elements */
+}
+
+.has-spinner.btn.active .spinner {
+    text-align: left; 
+    width: 20px;
+}
+
+.inactive {
+    opacity: 0;
+}
+
+.alert-warning {
+    background-color: #FFD3D3;
+    border-color: #AB8F8F;
+    color: #635844;
+}
+
+#callEndPopupModal {
+}
+
+#callEndPopupIframe {
+    height: 400px;
+}
+
+.modal.fade.in {
+    overflow-y: auto;
+}
+
+.connected {
+    color: black;
+}
+
+.disconnected {
+    color: red;
+}
+
+.pingfailed-connection-status {
+    display:inline-block;
+    font-size: 20px;
+    color: #333;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    vertical-align: bottom;
+    padding-top:10%;
+}
+
+.pingfailed-overlay {
+    background: #e9e9e9;
+    #display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0.9;
+    width: 100%;
+    height: 100%;
+    z-index:100;
+}
+
+.connectingText {
+    font-size: 30px;
+    font-family: Helvetica, Arial;
+    font-weight: 500;
+}
+
+.loginProblemWarningDiv {
+    margin-bottom: 20px;
+}
+
+.loginProblemWarning {
+    padding: 3px 3px 3px 3px;
+    color: red;
+}
+
+/* Fix for disabled select box not graying out when using bootstrap. See https://github.com/necolas/normalize.css/issues/349 */
+select:disabled {
+    color: graytext !important;
+}
