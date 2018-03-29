@@ -22,7 +22,7 @@ To build the project, run the following from the project directory :
 
 - *grunt*
 
-This generates a dist/public_html and dist/private_html folder, with all required files and minified & concatenated *.js* and *.css*.
+This generates a dist/public_html folder, with all required files and minified & concatenated *.js* and *.css*.
 
 Deployment
 ---------
